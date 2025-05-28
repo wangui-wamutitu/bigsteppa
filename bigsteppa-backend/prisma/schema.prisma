@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(uuid())
+  email       String        @unique
+  username    String        @unique
+  createdAt   DateTime      @default(now())
+  credentials Credential[]
+  challenges  Challenge[]
+}
+
+model Credential {
+  id       Int    @id @default(autoincrement())
+  userId   String 
+  password String
+  //TODO: OAuth providers to be here
+
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Challenge {
+  id               String      @id @default(uuid())
+  userId           String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  durationValue    Int
+  durationUnit     DurationUnit
+  startDate        DateTime
+  lastUpdatedDate  DateTime
+  status           ChallengeStatus
+  reminderTime     String      // 'HH:mm'
+  description      String?
+  isPaused         Boolean
+  logs             ChallengeLog[]
+  createdAt        DateTime      @default(now())
+}
+
+model ChallengeLog {
+  id                   String   @id @default(uuid())
+  challenge            Challenge @relation(fields: [challengeId], references: [id])
+  challengeId          String
+  createdAt            DateTime @default(now())
+  dailyReflection      String?
+  url                  String
+}
+
+enum DurationUnit {
+  Days
+  Weeks
+  Months
+  Years
+}
+
+enum ChallengeStatus {
+  SetToHappen
+  Ongoing
+  Completed
+  Stalled
+}
+
