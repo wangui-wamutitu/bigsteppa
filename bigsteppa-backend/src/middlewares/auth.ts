@@ -16,7 +16,7 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) {
-    return res.sendStatus(401).json({ error: "Please login first" });
+    return res.status(401).json({ error: "No token. Please login first" });
   }
 
   jwt.verify(
@@ -25,11 +25,9 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
     (err: any, user: any) => {
       if (err) {
         console.log(err);
-        return res.sendStatus(403).json({ error: "Unauthorized" });
+        return res.status(401).json({ error: "Unauthorized: ", err });
       }
-
       req.user = user;
-
       next();
     }
   );
