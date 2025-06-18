@@ -2,6 +2,11 @@ import { Prisma } from "@prisma/client";
 import prisma from "../db";
 import { comparePassword, generateToken, hashPassword } from "../utils/auth";
 
+function sanitizeUser(user: any) {
+  const { credentials, ...sanitized } = user;
+  return sanitized;
+}
+
 export const AuthService = {
   async register(email: string, username: string, password: string) {
     const existingUser = await prisma.user.findFirst({
@@ -23,7 +28,13 @@ export const AuthService = {
         },
       },
     });
-    return generateToken({ id: user.id, email });
+
+    const token = generateToken({ id: user.id, email: user.email })
+    const fetchUser = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
+
+    return {token, user: sanitizeUser(fetchUser)};
   },
 
   async login(email: string, password: string) {
@@ -54,6 +65,8 @@ export const AuthService = {
       throw new Error("Invalid credentials. Password is incorrect.");
     }
 
-    return generateToken({ id: user.id, email: user.email });
+    const token = generateToken({ id: user.id, email: user.email })
+
+    return {token, user: sanitizeUser(user)};
   },
 };

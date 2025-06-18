@@ -13,12 +13,12 @@ export const register = async (req: Request, res: Response) => {
   if (!parsed.success) return res.status(400).json(parsed.error.flatten());
 
   try {
-    const token = await AuthService.register(
+    const {token, user} = await AuthService.register(
       parsed.data.email,
       parsed.data.username,
       parsed.data.password
     );
-    return res.status(201).json({ token, message: "Successfully registered!" });
+    return res.status(201).json({ token, message: "Successfully registered!", user });
   } catch (e: any) {
     return res.status(400).json({ error: e.message });
   }
@@ -29,8 +29,8 @@ export const login = async (req: Request, res: Response) => {
   if (!parsed.success) return res.status(400).json(parsed.error.flatten());
 
   try {
-    const token = await AuthService.login(parsed.data.email, parsed.data.password);
-    return res.status(200).json({ token });
+    const {token, user} = await AuthService.login(parsed.data.email, parsed.data.password);
+    return res.status(200).json({ token, user });
   } catch (e: any) {
     return res.status(401).json({ error: e.message });
   }

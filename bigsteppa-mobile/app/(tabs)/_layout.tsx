@@ -1,34 +1,60 @@
+import { colors } from '@/constants/colors';
+import { useAuthStore } from '@/store/authStore';
 import { Tabs } from 'expo-router';
+import { Home, Plus, User } from 'lucide-react-native';
 import React from 'react';
-import { Platform } from 'react-native';
-import { AntDesign, FontAwesome } from '@expo/vector-icons';
 
 export default function TabLayout() {
-  // const colorScheme = useColorScheme();
-
+  const {user} = useAuthStore()
+  
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.text.tertiary,
+        tabBarStyle: {
+          borderTopColor: colors.border,
+          backgroundColor: colors.background.primary,
+        },
+        headerStyle: {
+          backgroundColor: colors.background.primary,
+        },
+        headerTitleStyle: {
+          color: colors.text.primary,
+          fontWeight: '600',
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: () => <FontAwesome name="home" size={24} color='#ff914d'/>,
+          title: 'Challenges',
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Home size={size} color={color} />
+          ),
         }}
       />
+      
+      <Tabs.Screen
+        name="create"
+        options={{
+          title: 'Create Challenge',
+          tabBarLabel: 'Create',
+          tabBarIcon: ({ color, size }) => (
+            <Plus size={size} color={color} />
+          ),
+        }}
+      />
+      
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
-          tabBarIcon: () => <AntDesign name="profile" size={24} color='#ff914d' />,
+          title: `Hey ${user?.username}`,
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <User size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

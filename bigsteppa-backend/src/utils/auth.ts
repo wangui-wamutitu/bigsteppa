@@ -10,7 +10,7 @@ export const comparePassword = async (password: string, hashedPassword:string) =
 };
 
 
-const JWT_SECRET = process.env.TOKEN_SECRET || 'youse-a-big-steppa-innit';
+const JWT_SECRET = process.env.TOKEN_SECRET || 'youse-a-big-steppa-innit-honey-320950685902490';
 export const generateToken = (user: {id: string, email: string}) => {
   return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
     expiresIn: "86400s",
